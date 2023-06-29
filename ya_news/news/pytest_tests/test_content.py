@@ -21,6 +21,7 @@ def test_news_order(client):
     sorted_dates = sorted(all_dates, reverse=True)
     assert all_dates == sorted_dates
 
+
 @pytest.mark.django_db
 def test_comments_order(client, news, id_for_args, comment_list):
     url = reverse('news:detail', args=id_for_args)
@@ -29,6 +30,7 @@ def test_comments_order(client, news, id_for_args, comment_list):
     news = response.context['news']
     all_comments = news.comment_set.all()
     assert all_comments[0].created < all_comments[1].created
+
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(

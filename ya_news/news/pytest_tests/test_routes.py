@@ -11,11 +11,11 @@ import pytest
 @pytest.mark.parametrize(
     'name, args',
     (
-     ('news:home', None),
-     ('users:login', None),
-     ('users:logout', None),
-     ('users:signup', None),
-     ('news:detail', pytest.lazy_fixture('id_for_args')),
+        ('news:home', None),
+        ('users:login', None),
+        ('users:logout', None),
+        ('users:signup', None),
+        ('news:detail', pytest.lazy_fixture('id_for_args')),
     ),
 )
 def test_pages_availability(client, name, args):
@@ -33,10 +33,8 @@ def test_pages_availability(client, name, args):
 )
 @pytest.mark.parametrize(
     'name',
-    (
-     'news:edit',
-     'news:delete',
-    ),
+    ('news:edit',
+     'news:delete',),
 )
 def test_pages_availability_for_different_users(
         parametrized_client, name, comment, expected_status

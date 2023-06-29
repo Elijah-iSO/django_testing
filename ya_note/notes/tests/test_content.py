@@ -17,8 +17,7 @@ class TestContentPage(TestCase):
         cls.notes = Note.objects.create(
             title='Заметка автора',
             text='Просто текст',
-            author=cls.author_1,
-            )
+            author=cls.author_1,)
 
     def test_list_context(self):
         for user in self.users:

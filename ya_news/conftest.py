@@ -33,8 +33,7 @@ def news_list():
             title=f'Новость {index}',
             text='Просто текст.',
             date=datetime.today() - timedelta(days=index)
-            ) for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
-    )
+        ) for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1))
     return news_list
 
 
