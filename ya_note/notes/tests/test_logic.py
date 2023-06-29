@@ -73,7 +73,7 @@ class TestLogic(TestCase):
 
     def test_empty_slug(self):
         self.form_data.pop('slug')
-        response = self.client.post(self.url, data=self.form_data)
+        response = self.client.post(self.url_add, data=self.form_data)
         self.assertRedirects(response, reverse('notes:success'))
         notes_count = Note.objects.count()
         self.assertEqual(notes_count, 2)
