@@ -21,7 +21,7 @@ class TestLogic(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create(username='Мимо Крокодил')
+        cls.user = User.objects.create(username='Пользователь')
         cls.auth_client = Client()
         cls.auth_client.force_login(cls.user)
         cls.reader = User.objects.create(username='Читатель')
@@ -73,7 +73,6 @@ class TestLogic(TestCase):
 
     def test_empty_slug(self):
         self.form_data.pop('slug')
-        self.client.force_login(self.author)
         response = self.client.post(self.url, data=self.form_data)
         self.assertRedirects(response, reverse('notes:success'))
         notes_count = Note.objects.count()
