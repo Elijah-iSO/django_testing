@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
-
 from notes.models import Note
 
 User = get_user_model()
@@ -11,24 +10,29 @@ class TestContentPage(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.author_1 = User.objects.create(username='Автор 1')
-        cls.author_2 = User.objects.create(username='Автор 2')
-        cls.users = [cls.author_1, cls.author_2]
+        cls.author = User.objects.create(username='Автор')
+        cls.author_client = Client()
+        cls.author_client.force_login(cls.author)
+        cls.reader = User.objects.create(
+            username='Авторизированный пользователь')
+        cls.reader_client = Client()
+        cls.reader_client.force_login(cls.reader)
         cls.notes = Note.objects.create(
             title='Заметка автора',
             text='Просто текст',
-            author=cls.author_1,)
+            author=cls.author,)
 
-    def test_list_context(self):
-        for user in self.users:
-            self.client.force_login(user)
-            url = reverse('notes:list')
-            response = self.client.get(url)
-            object_list = response.context['object_list']
-            if user == self.notes.author:
-                self.assertIn(self.notes, object_list)
-            else:
-                self.assertNotIn(self.notes, object_list)
+    def test_notes_list_for_different_users(self):
+        users_content = (
+            (self.author, True),
+            (self.reader, False),
+        )
+        for user, content in users_content:
+            with self.subTest(user=user):
+                url = reverse('notes:list')
+                response = self.client.get(url)
+                object_list = response.context['object_list']
+                self.assertEqual(self.notes in object_list, content)
 
     def test_anonymous_client_has_no_form(self):
         response = self.client.get('notes:add')
@@ -40,7 +44,7 @@ class TestContentPage(TestCase):
             ('notes:edit', (self.notes.slug,))
         )
         for url, args in urls:
-            self.client.force_login(self.author_1)
+            self.client.force_login(self.author)
             with self.subTest(url=url):
                 url = reverse(url, args=args)
                 response = self.client.get(url)

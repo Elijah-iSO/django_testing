@@ -1,8 +1,8 @@
-import pytest
-
 from datetime import datetime, timedelta
-from django.conf import settings
 
+import pytest
+from django.conf import settings
+from django.urls import reverse
 from news.models import Comment, News
 
 
@@ -12,18 +12,28 @@ def author(django_user_model):
 
 
 @pytest.fixture
+def user(django_user_model):
+    return django_user_model.objects.create(username='Пользователь')
+
+
+@pytest.fixture
 def author_client(author, client):
     client.force_login(author)
     return client
 
 
 @pytest.fixture
+def user_client(user, client):
+    client.force_login(user)
+    return client
+
+
+@pytest.fixture
 def news():
-    news = News.objects.create(
+    return News.objects.create(
         title='Заголовок',
         text='Текст новости',
     )
-    return news
 
 
 @pytest.fixture
@@ -54,13 +64,14 @@ def comment_list(author, news):
             text=f'Текст комментария {index}',
             author=author,
             news=news,
+            created=datetime.today() - timedelta(days=index),
         ) for index in range(2)
     )
     return comment_list
 
 
 @pytest.fixture
-def id_for_args(news):
+def news_id_for_args(news):
     return news.id,
 
 
@@ -71,3 +82,8 @@ def form_data(news, author):
         'author': author,
         'news': news,
     }
+
+
+@pytest.fixture
+def home_url():
+    return reverse('news:home')

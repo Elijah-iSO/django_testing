@@ -3,10 +3,9 @@ from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
-from pytils.translit import slugify
-
 from notes.forms import WARNING
 from notes.models import Note
+from pytils.translit import slugify
 
 User = get_user_model()
 
@@ -47,21 +46,19 @@ class TestLogic(TestCase):
         self.assertEqual(notes_count, 1)
 
     def test_user_can_create_note(self):
+        notes_count_before = Note.objects.count()
         response = self.auth_client.post(self.url_add, data=self.form_data)
         self.assertRedirects(response, reverse('notes:success'))
-        notes_count = Note.objects.count()
-        self.assertEqual(notes_count, 2)
+        notes_count_after = Note.objects.count()
+        self.assertEqual(notes_count_after, notes_count_before + 1)
         note = Note.objects.last()
         self.assertEqual(note.text, self.form_data['text'])
         self.assertEqual(note.title, self.form_data['title'])
         self.assertEqual(note.author, self.user)
 
     def test_user_cant_repeat_slug(self):
-        wrong_slug_data = {
-            'title': 'Какой-то заголовок',
-            'text': 'Какой-то текст',
-            'slug': 'Slug'}
-        response = self.auth_client.post(self.url_add, data=wrong_slug_data)
+        self.form_data['slug'] = self.note.slug
+        response = self.auth_client.post(self.url_add, data=self.form_data)
         self.assertFormError(
             response,
             form='form',
