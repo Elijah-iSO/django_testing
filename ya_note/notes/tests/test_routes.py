@@ -36,7 +36,7 @@ class TestRoutes(TestCase):
         for name in urls:
             with self.subTest(name=name):
                 url = reverse(name)
-                response = self.client.get(url)
+                response = self.reader_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_pages_availability_author(self):
@@ -48,19 +48,19 @@ class TestRoutes(TestCase):
         for name in urls:
             with self.subTest(user=self.author, name=name):
                 url = reverse(name)
-                response = self.client.get(url)
+                response = self.author_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_availability_for_edit_delete_detail(self):
-        users_statuses = (
-            (self.author, HTTPStatus.OK),
-            (self.reader, HTTPStatus.NOT_FOUND),
+        clients_statuses = (
+            (self.author_client, HTTPStatus.OK),
+            (self.reader_client, HTTPStatus.NOT_FOUND),
         )
-        for user, status in users_statuses:
+        for client, status in clients_statuses:
             for name in ('notes:edit', 'notes:delete', 'notes:detail',):
-                with self.subTest(user=user, name=name):
+                with self.subTest(client=client, name=name):
                     url = reverse(name, args=(self.notes.slug,))
-                    response = self.client.get(url)
+                    response = client.get(url)
                     self.assertEqual(response.status_code, status)
 
     def test_redirect_for_anonymous_client(self):

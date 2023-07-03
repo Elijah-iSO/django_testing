@@ -23,14 +23,14 @@ class TestContentPage(TestCase):
             author=cls.author,)
 
     def test_notes_list_for_different_users(self):
-        users_content = (
-            (self.author, True),
-            (self.reader, False),
+        client_content = (
+            (self.author_client, True),
+            (self.reader_client, False),
         )
-        for user, content in users_content:
-            with self.subTest(user=user):
+        for client, content in client_content:
+            with self.subTest(client=client):
                 url = reverse('notes:list')
-                response = self.client.get(url)
+                response = client.get(url)
                 object_list = response.context['object_list']
                 self.assertEqual(self.notes in object_list, content)
 
